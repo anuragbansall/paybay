@@ -1,6 +1,7 @@
 import express from "express";
 import { PORT, NODE_ENV } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
+import userRouter from "./routes/user.routes.js";
 
 const app = express();
 
@@ -9,6 +10,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRouter);
 
 app.listen(PORT, () => {
   console.log(`paybay API is running on port ${PORT}`);
