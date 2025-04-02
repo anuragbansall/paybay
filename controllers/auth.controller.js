@@ -57,9 +57,45 @@ export const signup = async (req, res, next) => {
   }
 };
 
-export const signin = async (req, res) => {
-  // Todo: Implement signin logic
-  res.status(200).json({ message: "User signed in successfully!" });
+export const signin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      const error = new Error("All fields are required!");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      const error = new Error("Invalid credentials!");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      const error = new Error("Invalid credentials!");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    // Generate a token
+    const token = genToken(user._id);
+
+    return res.status(200).json({
+      success: true,
+      message: "User signed in successfully!",
+      data: {
+        user,
+        token,
+      },
+    });
+  } catch (error) {
+    console.error("Error during signin:", error);
+    next(error);
+  }
 };
 
 export const signout = async (req, res) => {
