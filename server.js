@@ -3,6 +3,7 @@ import { PORT, NODE_ENV } from "./config/env.js";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import subscriptionRouter from "./routes/subscription.routes.js";
+import connectDB from "./database/mongodb.js";
 
 const app = express();
 
@@ -14,9 +15,10 @@ app.get("/", (req, res) => {
   res.send("Hello, Welcome to paybay API!");
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`paybay API is running on port ${PORT}`);
   console.log(`Environment: ${NODE_ENV}`);
+  await connectDB();
 });
 
 export default app;
