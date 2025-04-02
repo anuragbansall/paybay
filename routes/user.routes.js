@@ -6,12 +6,13 @@ import {
   getUserById,
   updateUser,
 } from "../controllers/user.controller.js";
+import authorize from "../middlewares/auth.middleware.js";
 
 const userRouter = Router();
 
 userRouter.get("/", getAllUsers);
 
-userRouter.get("/:id", getUserById);
+userRouter.get("/:id", authorize, getUserById);
 
 userRouter.post("/", createUser);
 
