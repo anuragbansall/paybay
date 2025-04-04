@@ -62,11 +62,28 @@ export const createSubscription = async (req, res, next) => {
 };
 
 export const updateSubscription = async (req, res, next) => {
-  const { id } = req.params;
-  res.status(200).json({
-    status: "success",
-    message: `Subscription with ID ${id} updated successfully`,
-  });
+  try {
+    const { id } = req.params;
+    const subscription = await Subscription.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!subscription) {
+      const error = new Error("Subscription not found");
+      error.status = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: `Subscription with ID ${id} updated successfully`,
+      data: subscription,
+    });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 export const deleteSubscription = async (req, res, next) => {
