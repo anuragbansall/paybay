@@ -108,11 +108,26 @@ export const deleteSubscription = async (req, res, next) => {
 };
 
 export const getSubscriptionsByUserId = async (req, res, next) => {
-  const { userId } = req.params;
-  res.status(200).json({
-    status: "success",
-    message: `Subscriptions for user with ID ${userId} retrieved successfully`,
-  });
+  try {
+    const { userId } = req.params;
+
+    const subscriptions = await Subscription.find({ user: userId });
+
+    if (!subscriptions) {
+      const error = new Error("No subscriptions found for this user");
+      error.status = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: `Subscriptions for user with ID ${userId} retrieved successfully`,
+      data: subscriptions,
+    });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 export const cancelSubscription = async (req, res, next) => {
