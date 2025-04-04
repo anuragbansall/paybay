@@ -158,10 +158,26 @@ export const cancelSubscription = async (req, res, next) => {
 };
 
 export const getAllUpcomingRenewal = async (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    message: "Upcoming renewals retrieved successfully",
-  });
+  try {
+    const subscriptions = await Subscription.find({
+      renewalDate: { $gt: new Date() },
+    });
+
+    if (!subscriptions) {
+      const error = new Error("No upcoming renewals found");
+      error.status = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Upcoming renewals retrieved successfully",
+      data: subscriptions,
+    });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 export const getAllUpcomingRenewalByUserId = async (req, res, next) => {
