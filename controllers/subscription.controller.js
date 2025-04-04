@@ -131,11 +131,30 @@ export const getSubscriptionsByUserId = async (req, res, next) => {
 };
 
 export const cancelSubscription = async (req, res, next) => {
-  const { id } = req.params;
-  res.status(200).json({
-    status: "success",
-    message: `Subscription with ID ${id} cancelled successfully`,
-  });
+  try {
+    const { id } = req.params;
+
+    const subscription = await Subscription.findByIdAndUpdate(
+      id,
+      { status: "inactive" },
+      { new: true, runValidators: true }
+    );
+
+    if (!subscription) {
+      const error = new Error("Subscription not found");
+      error.status = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: `Subscription with ID ${id} cancelled successfully`,
+      data: subscription,
+    });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 export const getAllUpcomingRenewal = async (req, res, next) => {
