@@ -10,6 +10,7 @@ import {
   getSubscriptionsByUserId,
   updateSubscription,
 } from "../controllers/subscription.controller.js";
+import authorize from "../middlewares/auth.middleware.js";
 
 const subscriptionRouter = Router();
 
@@ -24,7 +25,7 @@ subscriptionRouter.get("/", getSubscriptions);
 
 subscriptionRouter.get("/:id", getSubscriptionById);
 
-subscriptionRouter.post("/", createSubscription);
+subscriptionRouter.post("/", authorize, createSubscription);
 
 subscriptionRouter.put("/:id", updateSubscription);
 
